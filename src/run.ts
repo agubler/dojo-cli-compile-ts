@@ -9,7 +9,7 @@ const pkgDir: any = require('pkg-dir');
 const workingDirectory = pkgDir.sync(process.cwd());
 
 const distCompilerOptions = {
-	outDir: 'dist',
+	outDir: 'dist/umd',
 	declaration: true,
 	sourceMap: true,
 	inlineSources: true
