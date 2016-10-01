@@ -1,6 +1,7 @@
 import { Argv } from 'yargs';
 import { Helper } from 'dojo-cli/interfaces';
 import * as ts from 'typescript';
+import * as chalk from 'chalk';
 import * as path from 'path';
 import * as _ from 'lodash';
 
@@ -22,25 +23,33 @@ export interface CompilerArgs extends Argv {
 }
 
 function compile(fileNames: string[], options: ts.CompilerOptions, host: ts.CompilerHost): void {
-	let program = ts.createProgram(fileNames, options, host);
-	let emitResult = program.emit();
+	const program = ts.createProgram(fileNames, options, host);
+	const emitResult = program.emit();
+	const diagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
 
-	let allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
-
-	allDiagnostics.forEach(diagnostic => {
-		let { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
-		let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-		console.log(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
+	diagnostics.forEach(diagnostic => {
+		const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+		const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
+		console.error(chalk.red(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`));
 	});
 
-	let exitCode = emitResult.emitSkipped ? 1 : 0;
-	console.log(`Process exiting with code '${exitCode}'.`);
+	const exitCode = emitResult.emitSkipped || diagnostics.length ? 1 : 0;
+
+	if (!exitCode) {
+		console.info(chalk.green.bold('\nCompilation Completed'));
+	}
+	else {
+		console.error(chalk.red.bold('\nCompilation Failed'));
+	}
+
 	process.exit(exitCode);
 }
 
 export default async function(helper: Helper, args: CompilerArgs) {
 	const tsconfigFile = path.join(workingDirectory, 'tsconfig.json');
+	const packageJsonFile = path.join(workingDirectory, 'package.json');
 	const tsconfig: any = require(tsconfigFile);
+	const packageJson: any = require(packageJsonFile);
 	const exclude = tsconfig.exclude || [];
 
 	if (args.type) {
@@ -49,5 +58,6 @@ export default async function(helper: Helper, args: CompilerArgs) {
 	}
 
 	const configParseResult = ts.parseJsonConfigFileContent(tsconfig, ts.sys, workingDirectory, undefined, tsconfigFile);
+	console.info(chalk.underline(`Compiling project ${packageJson.name}\n`));
 	compile(configParseResult.fileNames, configParseResult.options, ts.createCompilerHost(configParseResult.options));
 }
