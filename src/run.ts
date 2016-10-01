@@ -1,5 +1,6 @@
+import { Argv } from 'yargs';
+import { Helper } from 'dojo-cli/interfaces';
 import * as ts from 'typescript';
-import * as glob from 'glob';
 import * as path from 'path';
 import * as _ from 'lodash';
 
@@ -7,8 +8,21 @@ const pkgDir: any = require('pkg-dir');
 
 const workingDirectory = pkgDir.sync(process.cwd());
 
-function compile(fileNames: string[], options: ts.CompilerOptions): void {
-	let program = ts.createProgram(fileNames, options);
+const distCompilerOptions = {
+	outDir: 'dist',
+	declaration: true,
+	sourceMap: true,
+	inlineSources: true
+};
+
+const distExcludes = [ 'tests/**/*.ts' ];
+
+export interface CompilerArgs extends Argv {
+	type: 'dev' | 'dist';
+}
+
+function compile(fileNames: string[], options: ts.CompilerOptions, host: ts.CompilerHost): void {
+	let program = ts.createProgram(fileNames, options, host);
 	let emitResult = program.emit();
 
 	let allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
@@ -24,35 +38,16 @@ function compile(fileNames: string[], options: ts.CompilerOptions): void {
 	process.exit(exitCode);
 }
 
-function expandGlobs(globExpressions: string[]): Promise<string[][]> {
-	const globOptions = {
-		cwd: workingDirectory
-	};
+export default async function(helper: Helper, args: CompilerArgs) {
+	const tsconfigFile = path.join(workingDirectory, 'tsconfig.json');
+	const tsconfig: any = require(tsconfigFile);
+	const exclude = tsconfig.exclude || [];
 
-	return Promise.all(globExpressions.map((globExpression) => {
-		return new Promise<string[]>((resolve, reject) => {
-			glob(globExpression, globOptions, (err, files) => {
-				if (err) {
-					console.error('error', err);
-					reject(err);
-				}
-				resolve(files);
-			});
-		});
-	}));
+	if (args.type) {
+		_.merge(tsconfig.compilerOptions, distCompilerOptions);
+		tsconfig.exclude = exclude.concat(distExcludes);
+	}
+
+	const configParseResult = ts.parseJsonConfigFileContent(tsconfig, ts.sys, workingDirectory, undefined, tsconfigFile);
+	compile(configParseResult.fileNames, configParseResult.options, ts.createCompilerHost(configParseResult.options));
 }
-
-async function run() {
-	const tsConfig: any = require(path.join(workingDirectory, 'tsconfig.json'));
-	const includeFiles = await expandGlobs(tsConfig.include || []);
-	const excludeFiles = await expandGlobs(tsConfig.exclude || []);
-	const compileFiles = _.difference(_.flatten(includeFiles), _.flatten(excludeFiles));
-
-	compile(compileFiles, {
-		noImplicitAny: true,
-		target: ts.ScriptTarget.ES5, module: ts.ModuleKind.UMD,
-		moduleResolution: ts.ModuleResolutionKind.NodeJs, outDir: '_build/'
-	});
-}
-
-export default run;

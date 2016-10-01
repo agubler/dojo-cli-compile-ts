@@ -15,7 +15,7 @@
 		"node": "github:dojo/typings/custom/node/node.d.ts#a62873258aa1deed48f9882c193c335436100d4b"
 	},
 	"dependencies": {
-		"lodash": "^4.16.2",
-		"pkg-dir": "^1.0.0"
+		"yargs": "registry:npm/yargs#5.0.0+20160817153026",
+		"lodash": "registry:npm/lodash#4.0.0+20160723033700"
 	}
 }
