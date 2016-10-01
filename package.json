@@ -28,6 +28,11 @@
     "istanbul": "^0.4.3",
     "remap-istanbul": "^0.6.4",
     "tslint": "^3.11.0",
-    "typescript": "~2.0.3"
+    "typescript": "~2.0.3",
+    "yargs": "^5.0.0"
+  },
+  "dependencies": {
+    "lodash": "^4.16.2",
+    "pkg-dir": "^1.0.0"
   }
 }
