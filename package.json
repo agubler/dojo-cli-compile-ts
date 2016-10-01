@@ -1,25 +1,33 @@
 {
-	/* TODO: Update name, version, description, bugs URL, repo, and dependencies */
-	"name": "dojo-package-template",
-	"version": "2.0.0-pre",
-	"description": "Dojo 2 core. The Dojo 2 core library provides TypeScript & JavaScript authors with a complete set of tools for developing well-structured, highly maintainable applications.",
-	"homepage": "http://dojotoolkit.org",
-	"bugs": {
-		"url": "https://github.com/dojo/dojo2/issues"
-	},
-	"license": "BSD-3-Clause",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/dojo/dojo2-package-template.git"
-	},
-	"devDependencies": {
-		"dts-generator": "SitePen/dts-generator#1.2.0",
-		"grunt": "0.4.5",
-		"grunt-contrib-clean": "0.6.0",
-		"grunt-contrib-copy": "0.8.0",
-		"grunt-ts": "3.0.0",
-		"grunt-tslint": "2.0.0",
-		"intern": "2.2.2",
-		"typescript": "1.4.1"
-	}
+  "name": "dojo-cli-compile-ts",
+  "version": "2.0.0-pre",
+  "description": "Support compilation of typescript",
+  "private": true,
+  "homepage": "http://dojotoolkit.org",
+  "bugs": {
+    "url": "https://github.com/agubler/dojo-cli-compile-ts/issues"
+  },
+  "license": "BSD-3-Clause",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dojo/dojo-cli-compile-ts.git"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "codecov.io": "0.1.6",
+    "dojo-cli": "^2.0.0-alpha.3",
+    "dojo-loader": ">=2.0.0-beta.7",
+    "dts-generator": "~1.7.0",
+    "glob": "^7.0.3",
+    "grunt": "~1.0.1",
+    "grunt-dojo2": ">=2.0.0-beta.16",
+    "intern": "^3.2.3",
+    "istanbul": "^0.4.3",
+    "remap-istanbul": "^0.6.4",
+    "tslint": "^3.11.0",
+    "typescript": "~2.0.3"
+  }
 }
