@@ -24,11 +24,16 @@ export interface CompilerArgs extends Argv {
 }
 
 export default async function(helper: Helper, args: CompilerArgs) {
+	if (!workingDirectory) {
+		throw new Error('Unable to find project root, please ensure that you are in the correct directory');
+	}
 	const tsconfigFile = path.join(workingDirectory, 'tsconfig.json');
 	const packageJsonFile = path.join(workingDirectory, 'package.json');
 	const tsconfig: any = require(tsconfigFile);
 	const packageJson: any = require(packageJsonFile);
 	const exclude = tsconfig.exclude || [];
+
+	console.info(chalk.underline(`Compiling project ${packageJson.name}\n`));
 
 	if (args.type) {
 		_.merge(tsconfig.compilerOptions, distCompilerOptions);
@@ -36,6 +41,5 @@ export default async function(helper: Helper, args: CompilerArgs) {
 	}
 
 	const configParseResult = ts.parseJsonConfigFileContent(tsconfig, ts.sys, workingDirectory, undefined, tsconfigFile);
-	console.info(chalk.underline(`Compiling project ${packageJson.name}\n`));
 	compile(configParseResult.fileNames, configParseResult.options, ts.createCompilerHost(configParseResult.options));
 }
