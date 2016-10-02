@@ -14,10 +14,7 @@ export default function(fileNames: string[], options: ts.CompilerOptions, host: 
 
 	const exitCode = emitResult.emitSkipped || diagnostics.length ? 1 : 0;
 
-	if (!exitCode) {
-		console.info(chalk.green.bold('\nCompilation Completed'));
-	}
-	else {
+	if (exitCode) {
 		throw new Error('Compilation Failed');
 	}
 }

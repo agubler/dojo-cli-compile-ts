@@ -59,7 +59,6 @@ registerSuite({
 		compile(fileNames, options, host);
 		assert.isTrue(createProgramStub.calledWith(fileNames, options, host));
 		assert.isTrue(getPreEmitDiagnosticsStub.calledWith(mockProgram));
-		assert.isTrue(consoleInfoStub.calledWith(chalk.green.bold('\nCompilation Completed')));
 	},
 	'compile throws an error when \'emitSkipped\' returns true'() {
 		const fileNames = 'fileNames';
