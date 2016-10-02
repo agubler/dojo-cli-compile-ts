@@ -42,5 +42,5 @@ export default async function(helper: Helper, args: CompilerArgs) {
 	const configParseResult = ts.parseJsonConfigFileContent(tsconfig, ts.sys, workingDirectory, undefined, tsconfigFile);
 	const compilerHost = ts.createCompilerHost(configParseResult.options);
 	compile(configParseResult.fileNames, configParseResult.options, compilerHost);
-	console.info(chalk.green('succesfully compiled project'));
+	console.info(chalk.green('successfully compiled project'));
 }
